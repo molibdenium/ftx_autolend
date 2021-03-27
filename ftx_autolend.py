@@ -73,29 +73,40 @@ async def autolending():
 			balance =api.get_balances()
 			availablecoins = {}
 			foundcoins = []
+
+			lending = api.get_spot_margin_lending_rates()
+			offers = api.get_spot_margin_lending_offer()
+
 			for s in balance:
 				if s["coin"] in ENVARGS:
 					foundcoins.append(s["coin"])
 					logger.info("%s %s total, %s available for borrow" % (s["coin"],s["total"],s["availableWithoutBorrow"]))
+
+
 					if s["availableWithoutBorrow"] <= 0:
 						logger.info("%s maximum amount already in lending" % s["coin"])
+
+						# check for actual lending rates changes
+						for o in offers:
+							for l in lending:
+								if o["coin"] == l["coin"]:
+									if o["rate"]!= l["previous"]:
+										logger.info("Resubmiting %s lending with new updated rate" % o["coin"])
+										x = api.submit_lending_offer(o["coin"],o["size"],l["previous"])
+
 					else:
 						availablecoins[s["coin"]] = s["total"]
-
-						logger.info("Checking lending rates for %s" % availablecoins)
-						lending = api.get_spot_margin_lending_rates()
-
 						lendingrates = {}
 						for s in lending:
 							if s["coin"] in availablecoins:
 								logger.info("%s lending rate: %s" % (s["coin"],s["previous"]))
 								lendingrates[s["coin"]] = s["previous"]
 
-
 						for c in lendingrates.keys():
 							# print(c,availablecoins[c],lendingrates[c] )
-							x = api.submit_lending_offer(c,availablecoins[c],lendingrates[c]/10)
-							logger.info("New %s lending submmited" % c)
+							x = api.submit_lending_offer(c,availablecoins[c],lendingrates[c])
+							logger.info("New %s lending submmited, updated amount" % c)
+
 			for c in ENVARGS:
 				if c not in foundcoins:
 					logger.info("there's no %s in your wallet" % c)

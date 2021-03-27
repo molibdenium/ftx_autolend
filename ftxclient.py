@@ -164,9 +164,15 @@ class FtxClient:
     def get_spot_margin_lending_rates(self) ->  List[dict]:
         return self._get("spot_margin/lending_rates")
 
+    def get_spot_margin_lending_offer(self) ->  List[dict]:
+        return self._get("spot_margin/offers")
+
 
     def get_spot_margin_market_info(self, market: str) -> dict:
         return self._get(f"spot_margin/market_info?market={market}")
+
+
+
 
 
     def submit_lending_offer(self, coin: str = None, size: float = 0,
