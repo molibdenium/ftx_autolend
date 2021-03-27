@@ -87,12 +87,12 @@ async def autolending():
 						logger.info("%s maximum amount already in lending" % s["coin"])
 
 						# check for actual lending rates changes
-						for o in offers:
-							for l in lending:
-								if o["coin"] == l["coin"]:
-									if o["rate"]!= l["previous"]:
-										logger.info("Resubmiting %s lending with new updated rate" % o["coin"])
-										x = api.submit_lending_offer(o["coin"],o["size"],l["previous"])
+						# for o in offers:
+						# 	for l in lending:
+						# 		if o["coin"] == l["coin"]:
+						# 			if o["rate"]!= l["previous"]:
+						# 				logger.info("Resubmiting %s lending with new updated rate" % o["coin"])
+						# 				x = api.submit_lending_offer(o["coin"],o["size"],l["previous"])
 
 					else:
 						availablecoins[s["coin"]] = s["total"]
