@@ -23,7 +23,7 @@ if 'win32' in sys.platform:
 	asyncio.set_event_loop_policy(asyncio.WindowsProactorEventLoopPolicy())
 
 
-SLEEP_INTERVAL = 5*60 # this sets the interval to check for new open positions (every n seconds)
+SLEEP_INTERVAL = 2*60 # this sets the interval to check for new lending rates estimation and available balances (every n seconds)
 
 #===============================================================================
 # env args
@@ -64,12 +64,12 @@ if len(ENVARGS) == 0:
 	quit()
 
 
-
+ESTIMATE_RATE_MULTIPLIER = 0.005 # reduces your rate to be slightly below of the next estimated rate 0.005 = 0.5%
 
 async def autolending():
 	while True:
 		try:
-
+			logger.info("***************************************************")
 			balance =api.get_balances()
 			availablecoins = {}
 			foundcoins = []
@@ -85,32 +85,35 @@ async def autolending():
 
 					if s["availableWithoutBorrow"] <= 0:
 						logger.info("%s maximum amount already in lending" % s["coin"])
-
-						# check for actual lending rates changes
-						# for o in offers:
-						# 	for l in lending:
-						# 		if o["coin"] == l["coin"]:
-						# 			if o["rate"]!= l["previous"]:
-						# 				logger.info("Resubmiting %s lending with new updated rate" % o["coin"])
-						# 				x = api.submit_lending_offer(o["coin"],o["size"],l["previous"])
-
 					else:
 						availablecoins[s["coin"]] = s["total"]
-						lendingrates = {}
-						for s in lending:
-							if s["coin"] in availablecoins:
-								logger.info("%s lending rate: %s" % (s["coin"],s["previous"]))
-								lendingrates[s["coin"]] = s["previous"]
+			
+			lendingrates = {}
+			for l in lending:
+				if l["coin"] in availablecoins:
+					logger.info("%s lending rate: %s" % (l["coin"],f'{l["previous"]*876000:.3f}'))
+					lendingrates[l["coin"]] = l["estimate"]
 
-						for c in lendingrates.keys():
-							# print(c,availablecoins[c],lendingrates[c] )
-							x = api.submit_lending_offer(c,availablecoins[c],lendingrates[c])
-							logger.info("New %s lending submmited, updated amount" % c)
+			coin_submitted_updated_amount = []
+			for c in lendingrates.keys():
+				# print(c,availablecoins[c],lendingrates[c] )
+				submit = api.submit_lending_offer(c,availablecoins[c],lendingrates[c]-(lendingrates[c]*ESTIMATE_RATE_MULTIPLIER))
+				logger.info("New %s lending submmited, updated amount to %s" % (c,availablecoins[c]))
+				coin_submitted_updated_amount.append(c)
 
 			for c in ENVARGS:
 				if c not in foundcoins:
 					logger.info("there's no %s in your wallet" % c)
 
+			#check for actual lending rates changes
+			for o in offers:
+				for l in lending:
+					if o["coin"] == l["coin"] and o["coin"] not in coin_submitted_updated_amount:
+						modified_l = l["estimate"]-(l["estimate"]*ESTIMATE_RATE_MULTIPLIER)
+						logger.info("%s your offer lending rate %s, predicted rate %s" % (o["coin"],f'{o["rate"]*876000:.3f}',f'{l["estimate"]*876000:.3f}'))
+						if (o["rate"] > modified_l) or ((o["rate"]/l["estimate"]) < 0.98): #if rate is bigger than estimate or more then 2% away
+							logger.info("%s submiting lending with new updated rate %s" % (o["coin"],f'{modified_l*876000:.3f}'))
+							submit = api.submit_lending_offer(o["coin"],o["size"],modified_l)
 
 
 		except:
