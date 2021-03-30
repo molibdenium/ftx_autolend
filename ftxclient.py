@@ -179,6 +179,18 @@ class FtxClient:
                       rate: float = 0) -> dict:
         return self._post('spot_margin/offers', {'coin': coin,"size":size,"rate":rate})
 
+    def get_stakes(self) ->  List[dict]:
+        return self._get("staking/stakes")
+
+    def get_stake_balances(self) ->  List[dict]:
+        return self._get("staking/balances")
+
+    def post_stake_request(self, coin: str = None, size: float = 0) -> dict:
+        return self._post('srm_stakes/stakes', {'coin': coin,"size":size})
+
+
+
+
 
 
     # def get_all_trades(self, market: str, start_time: float = None, end_time: float = None) -> List:
