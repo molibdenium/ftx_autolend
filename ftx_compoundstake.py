@@ -81,7 +81,7 @@ async def compoundstake():
 					foundcoins.append(s["coin"])
 					logger.info("%s %s total, %s available for staking" % (s["coin"],s["total"],s["availableWithoutBorrow"]))
 					if s["availableWithoutBorrow"] <= 0:
-						logger.info("%s maximum amount already in lending" % s["coin"])
+						logger.info("%s maximum amount already in staking" % s["coin"])
 					else:
 						availablecoins[s["coin"]] = s["availableWithoutBorrow"]
 
@@ -92,8 +92,6 @@ async def compoundstake():
 					logger.info("New %s stake submmited: %s" % (c,availablecoins[c]))
 				else:
 					logger.info("%s can't be staked" % c)
-
-
 			for c in ENVARGS:
 				if c not in foundcoins:
 					logger.info("there's no %s in your wallet" % c)
