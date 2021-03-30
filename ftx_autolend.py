@@ -80,7 +80,7 @@ async def autolending():
 			for s in balance:
 				if s["coin"] in ENVARGS:
 					foundcoins.append(s["coin"])
-					logger.info("%s %s total, %s available for borrow" % (s["coin"],s["total"],s["availableWithoutBorrow"]))
+					logger.info("%s %s total, %s available for lending" % (s["coin"],s["total"],s["availableWithoutBorrow"]))
 
 
 					if s["availableWithoutBorrow"] <= 0:
@@ -108,7 +108,7 @@ async def autolending():
 			#check for actual lending rates changes
 			for o in offers:
 				for l in lending:
-					if o["coin"] == l["coin"] and o["coin"] not in coin_submitted_updated_amount:
+					if o["coin"] == l["coin"] and o["coin"] not in coin_submitted_updated_amount and o["coin"] in ENVARGS:
 						modified_l = l["estimate"]-(l["estimate"]*ESTIMATE_RATE_MULTIPLIER)
 						logger.info("%s your offer lending rate %s, predicted rate %s" % (o["coin"],f'{o["rate"]*876000:.3f}',f'{l["estimate"]*876000:.3f}'))
 						if (o["rate"] > modified_l) or ((o["rate"]/l["estimate"]) < 0.98): #if rate is bigger than estimate or more then 2% away

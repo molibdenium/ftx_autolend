@@ -4,6 +4,10 @@ This python script will automatically compound lend your crypto, taking the lend
 # ftx_compoundstake
 This python script will automatically compound stake your staking profits, taking the staking profits and submitting a stake offer on the FTX exchange
 
+# Demo video
+https://youtu.be/9KmnBRN7SFk
+=======
+
 
 # Install intructions:
 
