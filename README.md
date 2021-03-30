@@ -17,7 +17,7 @@ If you are starting with a fresh python v3.X install, make sure to run "pip inst
 rename api_data_template.py to api_data.py and add you ftx API key/secret inside the file.
 
 # Running the script:
-python ftx_autolend.py BTC MOB USD USDT
+python ftx_autolend.py BTC MOB USD USDT<br/>
 python ftx_compoundstake RAY SRM MSRM MSRM_LOCKED
 
 
