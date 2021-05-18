@@ -34,7 +34,7 @@ api = FtxClient(api_key=API_KEY,api_secret=API_SECRET),subaccount_name="YOUR_SUB
 
 If you get Exceptions with "Size too large" errors, cancel the lending on the web interface and let the script do it itself, do not submit manually from the web interface before running the script to avoid this error. (still investigating it)
 
-
+# DONATIONS
 
 If you like this and made a lot of extra lending/staking money, feel free to contribute to my beer fund<br/>
 btc: 1DN6jvGZbQkYT9RoCjCVzTs5MwC3xvdmMh<br/>
